@@ -80,7 +80,6 @@ function getNewToken(oauth2Client, callback) {
   });
   rl.question('Enter the code from that page here: ', function(code) {
     rl.close();
-    code = "4/KCWP8FmAri-l48etGq_F9AbEL8Cq-9R9_DDGr92xdxQ";
     oauth2Client.getToken(code, function(err, token) {
       if (err) {
         console.log('Error while trying to retrieve access token', err);
