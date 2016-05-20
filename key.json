@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "kids4kids-1317",
+  "private_key_id": "8ce40b07c7f28401b6c656bd8cb617d9dee07032",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCVc4ZXGzecrsqW\nPTUs69OQY6O1gaCAzNwahYXDKBehd+3mhkQAeiSEaC3P0u+Fi7d3HdCKkhzKw44V\nAbXKjtXdFmT2NUHMRlSDzbOz7Rd3p6tBxsG9YjThi93mVMBxb3dRGvYvF27HY5Sz\niXcjqUtHKPOSER/UZo1xB2rkIJE4ubxasOrIHtHytIGhiigW/DhoqfLCHJlJ/q6O\nGmyUBdl5tTAwXu2uLCEGx05K37HxfNFOXC+pGlCc7sr560r9CaaFoQ1y9BT+VONg\nFkko0gkFKIQ5n5RfPs0iF/p8sI3bWMw1nxmo/yHqfC+3/82GNa4utCvJoyzvRXb+\nuzgx0oo9AgMBAAECggEAMLrnbdWRD4Sqx8wTX59Rb34drhwjMnwZtIge8mBLPDn3\nlzfmSmWJLKcvcNktglTpMGzHR7eWrcKPvGe/V9m1AA7CQslgt/OisQtMcfl3sms4\nWw0stMylw3kwlF7EFPisZgStivNQCrF8lgHXmAgmZICE0vbEcyQxME6j2tiHoX/m\nzA+DXeq1FfPd99ingHrLbyTJYA5HhjzBPGyZw8qlzmpalrQI3sJuSWT0+pAFNqxe\nxSW0K49BN+G+MPn9PR9gcbRqTofcUU6Pmf+gkSjUlyXqMgjYY+SaJdAlU3U9SRfp\n1g+KVfumwZkrVzjN8sPLVsCTwPSc4EBCqJ7PYATOYQKBgQDFDdBqr5vrI92fOQTC\nsiikMbQQNuOB1PqGRVwl1gTJmzVVGVP+Z7wjxRhlhFnaYOStQpFuyLdW34WWzgh/\ncXJPmTd/ZIQ5wr9TR9F5dtNQCKbQqonacU/MUifBi23UFZ3En8nuhjlcBFwMeKDH\nMQG7bYjhhv6abkHWWPySHmp1WQKBgQDCKFinhEUxVuWAPGEg5xroo2aJ0nK1Vb7D\ngal9I3g1JmnM9wZW54Q8ISqrfeBUVwL1/SWU7kpPuwDhnu1rM3WJibL0v9WXlHDt\n4RkpWA59wfRYec7V8RWdN8DXCO0hwSnw6FJ/iln+C8qdB/9+kagtO/b9z0uZW67V\nma/v+GbLhQKBgGgR56SwojQJeR6CSpVY6kXtSh/WHUmQZc9MCmKhKV4gboZHHika\nOC7cBQp4X8wJqDwpEA3mS43B9xeyMKK+E5UeYkURnRO0Wr9tCqCPtQJrz04dAzku\n5uoN6Zk6PgLod65Eha1Hjjuewc6EVsVciIGoU8ZoOUbuPC8sSBgToD3hAoGAc0qJ\n+k8s1zOGbDNuaZ9R9zqwNL7mpo8YC/f+sPRS+RyqTq+Q8CHh/+Kh99tzTiGs/G0p\n19n3/ohI6bD5wmJ4NQezYGpZZv0aYeb8jfRgBoUZl0AddiUGdKkatZXzWcveH9OU\nyW9aKOTPl5ecO4g6mUG2VNi3R4WNuADe3FxgjhECgYEAuk0hFgeohNan6gXPEwD3\nZ4kotnREXSrg9RDz31fCr3yGKydWHCb0aubuXbE7i0mnzvdXcS2e7DqfzDoqxe7A\n3PzY8J7GNrB+vs20IJCbb2IFDIMBwUe87aKvv4Oedl8fJWOSW7qgD9UpyY3Kf/58\nAGJVUvgEkRVrKaqkkYzj8vY=\n-----END PRIVATE KEY-----\n",
+  "client_email": "service@kids4kids-1317.iam.gserviceaccount.com",
+  "client_id": "102207449756293638723",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://accounts.google.com/o/oauth2/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/service%40kids4kids-1317.iam.gserviceaccount.com"
+}
