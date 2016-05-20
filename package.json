@@ -11,6 +11,7 @@
     "dateformat": "^1.0.12",
     "debug": "~2.2.0",
     "express": "^4.13.4",
+    "express-flash": "0.0.2",
     "express-session": "^1.10.1",
     "googleapis": "^7.0.0",
     "jade": "~1.11.0",
