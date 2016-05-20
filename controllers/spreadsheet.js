@@ -16,27 +16,29 @@ var sheetID = "1GU1JvLbw4AkE9iIqOsTZ_wHupCgADPCEH4owTYQcJ8Y";
 
 module.exports = {
 	saveVisitor: function(req, res, next) {
-		var now = new Date();
-		data[0] = dateFormat(now, "dd/mm/yyyy HH:MM:ss");
-		data[1] = req.body.name;
-		data[2] = req.body.hkid;
-		data[3] = req.body.purpose;
-		var authClient = new google.auth.JWT(key.client_email, null, key.private_key, SCOPES, null);
-		authClient.authorize(function(err, tokens) {
-			if (err) {
-				console.log(err);
-				return;
-		  	}
-		 //  	drive.files.list({ auth: authClient }, function (err, resp) {
-			//     // handle err and response
-			//     if (err) {
-			//       return console.log(err);
-			//     }
-			//     console.log(resp);
-			// });
-		  	updateSheet(authClient);
-		  	res.redirect('/');
-		});
+		if(req.body.name.length > 0 && req.body.hkid.length > 0 && req.body.purpose.length > 0 && !req.body.hkid.match(/[a-z]/i)) {
+			var now = new Date();
+			data[0] = dateFormat(now, "dd/mm/yyyy HH:MM:ss");
+			data[1] = req.body.name;
+			data[2] = req.body.hkid;
+			data[3] = req.body.purpose;
+			var authClient = new google.auth.JWT(key.client_email, null, key.private_key, SCOPES, null);
+			authClient.authorize(function(err, tokens) {
+				if (err) {
+					console.log(err);
+					return;
+			  	}
+			 //  	drive.files.list({ auth: authClient }, function (err, resp) {
+				//     // handle err and response
+				//     if (err) {
+				//       return console.log(err);
+				//     }
+				//     console.log(resp);
+				// });
+			  	updateSheet(authClient);
+			  	res.redirect('/');
+			});
+		}
 	}
 }
 
