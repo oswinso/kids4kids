@@ -141,6 +141,7 @@ function updateSheet(auth) {
 				console.log('2 The API returned an error: ' + err);
 				return;
 			}
+			console.log(response);
 		});
 	});
 }
