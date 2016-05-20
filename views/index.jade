@@ -4,6 +4,19 @@ block content
 	.container
 		.row
 			h1.text-center K4K
+		- if(messages.info)
+			- if(messages.info == "Success")
+				.alert.alert-success
+					strong Success!
+					p Your information has been recorded.
+			- if(messages.info == "Error")
+				.alert.alert-danger
+					strong Error!
+					p Something wrong happened. Please contact a system admin.
+			- if(messages.info == "Invalid")
+				.alert.alert-danger
+					strong Error!
+					p One of the fields is invalid. Please try again.
 		.row
 			h3 K4K Office Visitor Form
 				form(role='form', action="/visitor",method="post", style='max-width: 300px;')

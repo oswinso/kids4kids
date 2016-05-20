@@ -6,7 +6,8 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var routes = require('./routes/index');
 var users = require('./routes/users');
-
+var flash = require('express-flash');
+var session = require('express-session')
 var app = express();
 
 // view engine setup
@@ -19,7 +20,8 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-
+app.use(session({ secret: 'k4k', cookie: { maxAge: 60000 }}))
+app.use(flash())
 app.use('/', routes);
 
 // catch 404 and forward to error handler

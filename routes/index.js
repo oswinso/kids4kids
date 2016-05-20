@@ -8,6 +8,10 @@ router.get('/', function(req, res, next) {
 	res.render('index');
 });
 
+router.get('/visitor', function(req, res) {
+	res.redirect('/');
+});
+
 router.post('/visitor', spreadsheetController.saveVisitor);
 
 router.get('/ping', function(req, res) {
