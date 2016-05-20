@@ -1,1 +1,1 @@
-web: node k4k/bin/www
+web: npm start

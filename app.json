@@ -1,7 +1,7 @@
 {
   "name": "Kids 4 Kids",
   "description": "A web solution for office and volunteer work attendance",
-  "repository": "https://github.com/heroku/node-js-getting-started",
+  "repository": "https://github.com/oswinso/Kids4Kids",
   "keywords": ["node", "express", "google apis"],
   "image": "heroku/nodejs"
 }
