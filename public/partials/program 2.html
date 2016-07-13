@@ -1,0 +1,114 @@
+<h1> {{program.project}} @ {{program.location}} </h1>
+
+<div class="list-group col-md-4" >
+	<div class="list-group-item">
+		<p class="text-center"><b> Upcoming Sessions: </b></p>
+	</div>
+	<a class="list-group-item" ng-repeat="session in sessions" href="#/programs/{{program._id}}/{{session._id}}">
+		<p class="text-center"> {{ getDateString(session.time) }} </p>
+	</a>
+</div>
+<div class="col-md-8">
+	<div class="panel panel-primary" ng-if="currentSession">
+		<div class="panel-heading">
+			<h2 class="panel-title"> {{ currentSession.time }} </h2>
+		</div>
+		<table class="table table-striped table-hover">
+				<thead>
+					<th> Volunteer Name </th>
+					<th> Email </th>
+					<th> Remarks </th>
+					<th> Check In </th>
+				</thead>
+				<tbody>
+					<tr ng-repeat="volunteer in currentSession.volunteers">
+						<td> {{ volunteer.name }} </td>
+						<td> {{ volunteer.email }} </td>
+						<td> {{ volunteer.remarks }} </td>
+						<td> <input type="checkbox" data-toggle="toggle" data-on="Present" data-off="Absent"> </td>
+					</tr>
+				</tbody>
+		</table>
+		<div class="panel-footer">
+			<div class="list-group">
+				<!-- Search Bar -->
+				<div class="list-group-item">
+					<input class="form-control" id="volunteerSearch" name="volunteerName" ng-change="onSearchChange()" ng-model="search.value" ng-focus="focus=true" ng-blur="focus=false" placeholder="Add Volunteer">
+				</div>
+				<!-- Searching Text -->
+				<div class="list-group-item" ng-show="searching"> Searching... </div>
+				
+				<!-- Display Volunteer Search Results -->
+				<div class="list-group-item" ng-repeat="result in results" ng-click="selectResult(result)" ng-show="results && focus">
+					<h4 class="list-group-item-heading"> {{ result.name }} </h4>
+					<p class="list-group-item-text"> email: {{ result.email }}</p>
+					<p class="list-group-item-text"> phone: {{ result.phone }} </p>
+				</div>
+
+				<!-- Register Button if volunteer doesn't currently exists -->
+				<div class="list-group-item">
+					<button class="btn btn-default list-group-item" data-toggle="modal" data-target="#registerVolunteer" ng-show="noResults">Register Volunteer </button>
+				</div>
+			</div>
+			<md-autcomplete
+				md-selected-item="selectedItem"
+				md-search-text="searchText"
+				md-search-text-change="onSearchChange(searchText)"
+				md-selected-item-change="selectedItemChange(searchText)"
+				md-item-display="item.display"
+				md-min-length="0"
+				placeholder="Add a Volunteer">
+				<md-item-template>
+					<h4> <span md-highlight-text="searchText" md-highlight-flags="^i"> {{ item.name }} <span> </h4>
+					<p> Email: {{ result.email }}</p>
+					<p> Phone: {{ result.phone }} </p>
+				</md-item-template>
+			</md-autcomplete>
+		</div>
+	</div>
+	<div class="panel panel-primary" ng-if="!currentSession">
+		<div class="panel-heading">
+			<h2 class="panel-title text-centre"> There isn't a session today! </h2>
+		</div>
+		<div class="panel-body">
+			<p> Click on a session on the list to the left to modify the volunteers </p>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="registerVolunteer" role="dialog">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+				<h4 class="modal-title" id="registerVolunteerLabel"> Register A Volunteer </h4>
+			</div>
+			<div class="modal-body">
+				<form class="form">
+					<div class="input-group">
+						<label for="registerFirstName">First Name</label>
+						<input type="text" id="registerFirstName" class="form-control" placeholder="First Name">
+					</div>
+
+					<div class="input-group">
+						<label for="registerLastName">Last Name</label>
+						<input type="text" id="registerLastName" class="form-control" placeholder="Last Name">
+					</div>
+
+					<div class="input-group">
+						<label for="registerEmail">Email</label>
+						<input type="text" id="registerEmail" class="form-control" placeholder="Email">
+					</div>
+
+					<div class="input-group">
+						<label for="registerPhone">Phone</label>
+						<input type="text" id="registerPhone" class="form-control" placeholder="Phone">
+					</div>
+					<button type="submit" class="btn btn-default"> Register </button>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+<link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
