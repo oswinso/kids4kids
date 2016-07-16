@@ -342,4 +342,29 @@ router.get('/records/sessionID/:sessionID', function(req, res) {
 	});
 });
 
+router.put('/session/:sessionID', function(req, res) {
+	if(req.body) {
+		Session.findById(req.params.sessionID, function(err, session) {
+			session.time = req.body.time;
+			session.save(function(err) {
+				if(err) {
+					console.log(err);
+					res.status(400).send(err);
+					return;
+				} else {
+					// Return the record after created
+					res.status(200).json({
+						status: 'success',
+						data: {
+							id: session.id
+						},
+						message: null
+					});
+					return;
+				}
+			})
+		})
+	}
+})
+
 module.exports = router;

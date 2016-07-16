@@ -82,15 +82,17 @@ angular.module('myApp').controller('dashboardController',
 }]);
 
 angular.module('myApp').controller('programController',
-	['$scope', '$routeParams', 'socket', 'databaseService', 'AuthService', '$uibModal',
-	function($scope, $routeParams, socket, databaseService, AuthService, $uibModal) {
+	['$scope', '$routeParams','focus', 'databaseService', 'AuthService', '$uibModal',
+	function($scope, $routeParams, focus, databaseService, AuthService, $uibModal) {
 		// Initialise Variables
 		$scope.currentSession = null;
+		$scope.time = {readable:"", old:""};
 		$scope.searching = false;
 		$scope.noResults = true;
 		$scope.focus = false;
 		$scope.search = {value: ""};
 		$scope.errorMessage = "";
+		$scope.editing = false;
 
 		var today = new Date();
 		var yesterday = today;
@@ -107,25 +109,48 @@ angular.module('myApp').controller('programController',
 			$scope.errorMessage = "Cannot find specified session.";
 		});
 
-		databaseService.getSessions({
-			programID: $routeParams.programID,
-			time: {
-				$gte : yesterday.toISOString()
-			}
-		})
-		// Handle success
-		.then(function(sessions) {
-			if(sessions) {
-				$scope.sessions = sessions;
-				$scope.currentSession = sessions[0];
-				console.log("Current Session:");
-				console.log($scope.currentSession);
-			}
-		})
-		.catch(function(error) {
-			$scope.error = true;
-			$scope.errorMessage = "Cannot find specified program.";
-		});
+		var getCurrentSession = function(callback) {
+			databaseService.getSessions({
+				programID: $routeParams.programID,
+				time: {
+					$gte : yesterday.toISOString()
+				}
+			})
+			// Handle success
+			.then(function(sessions) {
+				if(sessions) {
+					$scope.sessions = sessions;
+
+					// If session specified, and is valid, then that one is the current session.
+					// If no session specified, get the closest one.
+					if($routeParams.sessionID) {
+						for(var i = 0; i < sessions.length; i++) {
+							if(sessions[i]._id == $routeParams.sessionID) {
+								$scope.currentSession = sessions[i];
+								break;
+							}
+						}
+						if(!$scope.currentSession) {
+							$location.path('/programs/'+$routeParams.programID);
+						}
+					} else {
+						$scope.currentSession = sessions[0];
+					}
+					$scope.time.readable = new Date($scope.currentSession.time).toLocaleString();
+					console.log("Current Session:");
+					console.log($scope.currentSession);
+					if(callback) {
+						callback();
+					}
+				}
+			})
+			.catch(function(error) {
+				$scope.error = true;
+				$scope.errorMessage = "Cannot find specified program.";
+			});
+		}
+
+		getCurrentSession();
 
 		// Returns date
 		$scope.getDateString = function(date) {
@@ -237,6 +262,40 @@ angular.module('myApp').controller('programController',
 				$scope.createVolunteer(volunteer);
 			});
 		}
+
+		// Edit Session Date
+		$scope.changeDate = function() {
+			$scope.editing = true;
+			console.log($scope.editing);
+			$scope.time.old = $scope.time.readable;
+			focus('changeDate');
+		}
+
+		// When finished editing date
+		$scope.makeChanges = function() {
+			if(!($scope.time.old == $scope.time.readable)) {
+				if(isDate($scope.time.readable)) {
+					$scope.currentSession.time = new Date($scope.time.readable).toISOString();
+					databaseService.updateSession($scope.currentSession._id, $scope.currentSession)
+					.then(function(response){
+						// Update Current Session
+						getCurrentSession(function() {
+							// Update Records for the updated session
+							$scope.updateRecords();
+						});
+					})
+					.catch(function(error) {
+						$scope.error = true;
+						$scope.errorMessage = error.message;
+					});
+				}
+			}
+			$scope.editing = false;
+		}
+
+		var isDate = function(date) {
+		    return ( (new Date(date) !== "Invalid Date" && !isNaN(new Date(date)) ));
+		}
 }]);
 
 angular.module('myApp').controller('ModalInstanceCtrl',
@@ -251,7 +310,6 @@ angular.module('myApp').controller('ModalInstanceCtrl',
 	};
 
 	$scope.submit = function() {
-		console.log("yeah?");
 		$uibModalInstance.close($scope.volunteer);
 	}
 

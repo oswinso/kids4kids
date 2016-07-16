@@ -13,6 +13,7 @@ var localStrategy = require('passport-local').Strategy;
 
 // Mongoose Connect
 var dbinfo = require('./dbinfolocal.json');
+// var dbinfo = require('./dbinforemote.json');
 console.log("Connecting to "+dbinfo.path)
 mongoose.connect(dbinfo.path)
 
@@ -45,7 +46,8 @@ app.use(cookieParser());
 app.use(session({
 	secret: 'k4k',
 	cookie: { maxAge: 60000 },
-	saveUninitialized: false
+	saveUninitialized: false,
+	resave: false,
 }));
 app.use(passport.initialize());
 app.use(passport.session());

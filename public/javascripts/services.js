@@ -117,7 +117,8 @@ angular.module('myApp').factory('AuthService',
 				getRecordsBySession: getRecordsBySession,
 				updateRecordByID: updateRecordByID,
 				removeRecord: removeRecord,
-				createVolunteer: createVolunteer
+				createVolunteer: createVolunteer,
+				updateSession: updateSession
 			});
 
 			function getPrograms(options) {
@@ -310,27 +311,36 @@ angular.module('myApp').factory('AuthService',
 				// Return promise object
 				return deferred.promise;
 			}
-	}])
-	.factory('socket', function($rootScope) {
-		var scoket = io.connect();
-		return {
-			on: function(eventName, callback) {
-				socket.on(eventName, function() {
-					var args = arguments;
-					$rootScope.$apply(function() {
-						callback.apply(socket, args);
-					});
+
+			function updateSession(sessionID, session) {
+				var deferred = $q.defer();
+
+				$http({
+					url: '/database/session/'+sessionID,
+					method: 'PUT',
+					data: session
+				})
+				.success(function(data) {
+					deferred.resolve(data);
+				})
+				.error(function(error) {
+					deferred.reject(error);
 				});
-			},
-			emit: function(eventName, data, callback) {
-				socket.emit(eventName, data, function() {
-					var args = arguments;
-					$rootScope.$apply(function() {
-						if(callback) {
-							callback.apply(socket, args);
-						}
-					});
-				});
+
+				// Return promise object
+				return deferred.promise;
 			}
+	}])
+	.factory('focus', function($timeout, $window) {
+		return function(id) {
+		// timeout makes sure that it is invoked after any other event has been triggered.
+		// e.g. click events that need to run before the focus or
+		// inputs elements that are in a disabled state but are enabled when those events
+		// are triggered.
+		$timeout(function() {
+			var element = $window.document.getElementById(id);
+			if(element)
+				element.focus();
+			});
 		};
 	});

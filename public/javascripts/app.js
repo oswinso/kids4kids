@@ -29,7 +29,7 @@ myApp.config(function($routeProvider) {
 			templateUrl: 'partials/admin.html',
 			access: {restricted: true}
 		})
-		.when('/programs/:programID', {
+		.when('/programs/:programID/:sessionID?', {
 			templateUrl: 'partials/program.html',
 			controller: 'programController',
 			access: {restricted: true}
