@@ -27,10 +27,6 @@ var databaseAPI = require('./routes/databaseAPI.js');
 // Create instance of express
 var app = express();
 
-// Socket.IO
-var io = socket_io();
-app.io = io;
-
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
