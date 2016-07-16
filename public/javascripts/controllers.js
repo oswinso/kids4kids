@@ -1,6 +1,6 @@
 angular.module('myApp').controller('loginController',
-	['$scope', '$location', 'AuthService',
-	function($scope, $location, AuthService) {
+	['$scope', '$location', 'spreadsheetService','AuthService',
+	function($scope, $location, $spreadsheetService, AuthService) {
 		$scope.login = function() {
 			// Initial Values
 			$scope.error = false;
@@ -21,6 +21,16 @@ angular.module('myApp').controller('loginController',
 					$scope.disabled = false;
 					$scope.loginForm = {};
 				});
+		};
+
+		$scope.submitVisitor = function() {
+			spreadsheetService.logVisitor($scope.visitor)
+			.then(function(response) {
+				console.log(response);
+			})
+			.catch(function(err) {
+				console.log(err);
+			});
 		};
 }]);
 

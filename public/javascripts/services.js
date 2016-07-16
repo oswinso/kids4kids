@@ -331,6 +331,33 @@ angular.module('myApp').factory('AuthService',
 				return deferred.promise;
 			}
 	}])
+	.factory('spreadsheetService',
+		['$q', '$timeout', '$http',
+		function($q, $timeout, $http) {
+			// Return available functions for use in the controllers
+			return ({
+				logVisitor: logVisitor
+			});
+
+			function logVisitor(visitor) {
+				var deferred = $q.defer();
+
+				$http({
+					url: '/visitor',
+					method: 'POST',
+					data: visitor
+				})
+				.success(function(data) {
+					deferred.resolve(data);
+				})
+				.error(function(error) {
+					deferred.reject(error);
+				});
+
+				// Return promise object
+				return deferred.promise;
+			}
+	}])
 	.factory('focus', function($timeout, $window) {
 		return function(id) {
 		// timeout makes sure that it is invoked after any other event has been triggered.

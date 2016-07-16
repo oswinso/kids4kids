@@ -12,8 +12,8 @@ var passport = require('passport');
 var localStrategy = require('passport-local').Strategy;
 
 // Mongoose Connect
-var dbinfo = require('./dbinfolocal.json');
-// var dbinfo = require('./dbinforemote.json');
+// var dbinfo = require('./dbinfolocal.json');
+var dbinfo = require('./dbinforemote.json');
 console.log("Connecting to "+dbinfo.path)
 mongoose.connect(dbinfo.path)
 
