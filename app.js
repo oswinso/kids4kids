@@ -18,14 +18,11 @@ console.log("Connecting to "+dbinfo.path)
 mongoose.connect(dbinfo.path)
 
 // user schema/model
-var User = require('./models/user.js');
+var User = require('./models/User.js');
 
 // Require Routes
 var authAPI = require('./routes/authAPI.js');
 var databaseAPI = require('./routes/databaseAPI.js');
-
-// Socket.IO
-var socket_io = require("socket.io");
 
 // Create instance of express
 var app = express();
