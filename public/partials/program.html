@@ -1,14 +1,21 @@
+<div ng-controller="logoutController">
+	<a class="btn btn-default" ng-click="logout()" role="button">Logout</a>
+</div>
+<a class="btn btn-default" href="#/dashboard" role="button">Back to Dashboard</a>
 <h1> {{program.project}} @ {{program.location}} </h1>
 
 <div class="list-group col-md-4" >
 	<div class="list-group-item">
 		<p class="text-center"><b> Upcoming Sessions: </b></p>
 	</div>
-	<a class="list-group-item" ng-repeat="session in sessions | filter: '!'+currentSession._id" href="#/programs/{{program._id}}/{{session._id}}">
+	<a class="list-group-item" ng-repeat="session in sessions" href="#/programs/{{program._id}}/{{session._id}}" ng-class="{ active: session._id == currentSession._id}">
 		<p class="text-center"> {{ getDateString(session.time) }} </p>
 	</a>
+	<button class="list-group-item" ng-click="createSessionModal()">
+		<p class=" text-center">Create Session</p>
+	</button>
 </div>
-<div class="col-md-8">
+<div class="col-md-8" ng-cloak>
 	<div ng-show="error" class="alert alert-danger">{{ errorMessage }}</div>
 	<div class="panel panel-primary" ng-if="currentSession">
 		<div class="panel-heading">
@@ -49,14 +56,14 @@
 				<div class="list-group-item" ng-show="searching"> Searching... </div>
 
 				<!-- Display Volunteer Search Results -->
-				<button class="list-group-item" ng-repeat="result in results" ng-click="$parent.selectResult(result)" ng-show="results">
+				<button class="list-group-item" ng-repeat="result in results | filter: filterAlreadyParticipating" ng-click="$parent.selectResult(result)" ng-show="results">
 					<h4 class="list-group-item-heading"> {{ result.name }} </h4>
 					<p class="list-group-item-text"> email: {{ result.email }}</p>
 					<p class="list-group-item-text"> phone: {{ result.phone }} </p>
 				</button>
 
 				<!-- Register Button if volunteer doesn't currently exists -->
-				<button class="list-group-item" ng-show="noResults" ng-click="openModal()">Register Volunteer </button>
+				<button class="list-group-item" ng-show="noResults" ng-click="openVolunteerModal()">Register Volunteer </button>
 			</div>
 		</div>
 	</div>
@@ -65,19 +72,19 @@
 			<h2 class="panel-title text-centre"> There isn't a session today! </h2>
 		</div>
 		<div class="panel-body">
-			<p> Click on a session on the list to the left to modify the volunteers </p>
+			<p> Click on a session on the list to the left to modify the volunteers, or create a new session.</p>
 		</div>
 	</div>
 </div>
 
 
-<script type="text/ng-template" id="myModalContent.html">
+<script type="text/ng-template" id="registerVolunteerTemplate.html">
 	<div class="modal-header">
 		<button type="button" class="close" ng-click="dismissModal()"><span>&times;</span></button>
-		<h4 class="modal-title" id="registerVolunteerLabel"> Register A Volunteer </h4>
+		<h4 class="modal-title" id="registerVolunteerLabel"> Register a Volunteer </h4>
 	</div>
 	<div class="modal-body">
-		<div ng-show="formError" class="alert alert-danger">{{ formErrorMessage }}</div>
+		<div ng-show="volunteerFormError" class="alert alert-danger">{{ volunteerFormErrorMessage }}</div>
 		<div class="input-group">
 			<label for="registerName">Name</label>
 			<input type="text" id="registerName" class="form-control" ng-model="volunteer.name" placeholder="Name" required>
@@ -100,6 +107,23 @@
 	</div>
 	<div class="modal-footer">
 		<button type="submit" class="btn btn-default" ng-click="submit()"> Register </button>
+	</div>
+</script>
+
+<script type="text/ng-template" id="createSessionTemplate.html">
+	<div class="modal-header">
+		<button type="button" class="close" ng-click="dismissModal()"><span>&times;</span></button>
+		<h4 class="modal-title" id="registerVolunteerLabel"> Create a Session </h4>
+	</div>
+	<div class="modal-body">
+		<div ng-show="sessionFormError" class="alert alert-danger">{{ sessionFormErrorMessage }}</div>
+		<div class="input-group">
+			<label for="date">Starting Time and Date</label>
+			<input type="text" id="date" class="form-control" ng-model="session.formTime" placeholder="(DD/MM/YYYY HH:MM)" required>
+		</div>
+	</div>
+	<div class="modal-footer">
+		<button type="submit" class="btn btn-default" ng-click="submit()"> Create Session </button>
 	</div>
 </script>
 

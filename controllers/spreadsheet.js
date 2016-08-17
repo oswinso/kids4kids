@@ -10,37 +10,34 @@ var key = require('../key.json');
 // at ~/.credentials/sheets.googleapis.com-nodejs-quickstart.json
 var SCOPES = ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive.readonly'];
 
-// timestamp, name, hkid, purpose
+// timestamp, name, email, purpose
 var data = ["","","",""];
 var sheetID = "1GU1JvLbw4AkE9iIqOsTZ_wHupCgADPCEH4owTYQcJ8Y";
 
 module.exports = {
-	saveVisitor: function(req, res, next) {
-		if(req.body.hkid < 8 || req.body.hkid > 11 || req.body.hkid.replace(/[^0-9]/g,"").length != 6) {
-			req.flash('info', 'Invalid');
-			res.redirect('/')
-		} else {
-			var now = new Date();
-			data[0] = dateFormat(now, "dd/mm/yyyy HH:MM:ss");
-			data[1] = req.body.name;
-			data[2] = req.body.hkid;
-			data[3] = req.body.purpose;
-			var authClient = new google.auth.JWT(key.client_email, null, key.private_key, SCOPES, null);
-			authClient.authorize(function(err, tokens) {
-				if (err) {
-					console.log(err);
-					req.flash('info', 'Error');
-					return;
-			  	}
-			  	updateSheet(authClient);
-			  	req.flash('info', 'Success');
-			  	res.redirect('/');
-			});
-		}	
+	saveVisitor: function(visitor, callback) {
+		var now = new Date();
+
+		// timestamp, name, email, purpose
+		var data = ["","","",""];
+
+		data[0] = dateFormat(now, "dd/mm/yyyy HH:MM:ss");
+		data[1] = visitor.name;
+		data[2] = visitor.email;
+		data[3] = visitor.purpose;
+		var authClient = new google.auth.JWT(key.client_email, null, key.private_key, SCOPES, null);
+		authClient.authorize(function(err, tokens) {
+			if (err) {
+				console.log(err);
+				req.flash('info', 'Error');
+				return;
+		  	}
+		  	updateSheet(authClient, data, callback);
+		});	
 	}
 }
 
-function updateSheet(auth) {
+function updateSheet(auth, data, callback) {
 	var sheets = google.sheets('v4');
 	sheets.spreadsheets.values.get({
 		auth: auth,
@@ -65,10 +62,10 @@ function updateSheet(auth) {
 			}
 		}, function(err, response) {
 			if (err) {
-				console.log('2 The API returned an error: ' + err);
-				return;
+				callback(err, null);
+			} else {
+				callback(null, response);
 			}
-			console.log(response);
 		});
 	});
 }

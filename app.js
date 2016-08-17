@@ -19,6 +19,7 @@ mongoose.connect(dbinfo.path)
 
 // user schema/model
 var User = require('./models/User.js');
+var TempUser = require('./models/TempUser');
 
 // Require Routes
 var authAPI = require('./routes/authAPI.js');

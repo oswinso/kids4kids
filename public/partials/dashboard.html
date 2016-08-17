@@ -1,13 +1,18 @@
+<div ng-controller="logoutController">
+	<a class="btn btn-default" ng-click="logout()" role="button">Logout</a>
+</div><a class="btn btn-default" href="#/admin" role="button" ng-show="admin">Back to Admin Dashboard</a>
 <h1> Dashboard </h1>
 <div class="row">
 	<div ng-show="error" class="alert alert-danger">{{errorMessage}}</div>
 </div>
+<!-- Search Box -->
 <div class="row">
 	<div class="col-md-4 col-md-offset-8">
 		<input type="text" id="query" class="form-control" placeholder="search" ng-model="query">
 	</div>
 </div>
-<div class="row">
+<!-- Non Editing -->
+<div class="row" ng-hide="editing">
 	<div class="panel panel-default">
 		<div class="panel-heading"> <h4>Programs: </h4></div>
 		<div class="list-group">
@@ -17,4 +22,39 @@
 			</a>
 		</div>
 	</div>
+</div>
+
+<!-- Editing -->
+<div class="row" ng-show="editing">
+	<div class="panel panel-default">
+		<table class="table table-striped table-hover">
+			<thead>
+				<th> Name </th>
+				<th> Location </th>
+				<th> Delete </th>
+			</thead>
+			<tbody>
+				<tr ng-repeat="program in programs | filter:query">
+					<td>
+						<div class="input-group">
+							<input type="text" class="form-control" ng-model="program.project" ng-change="$parent.modifyProgram(program)">
+						</div>
+					</td>
+					<td>
+						<div class="input-group">
+							<input type="text" class="form-control" ng-model="program.location" ng-change="$parent.modifyProgram(program)">
+						</div>
+					</td>
+					<td>
+						<button role="button" class="btn btn-default"> Delete Program </button>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>
+
+<div class="row">
+	<button class="btn btn-default" role="button" ng-click="editPrograms()" ng-hide="editing"> Edit Programs </button>
+	<button class="btn btn-default" role="button" ng-click="saveChanges()" ng-show="editing"> Save Changes </button>
 </div>

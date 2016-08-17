@@ -34,6 +34,21 @@ myApp.config(function($routeProvider) {
 			controller: 'programController',
 			access: {restricted: true}
 		})
+		.when('/users', {
+			templateUrl: 'partials/user.html',
+			controller: 'usersController',
+			access: {restricted: true}
+		})
+		.when('/statistics', {
+			templateUrl: 'partials/statistics.html',
+			controller: 'statisticsController',
+			access: {restricted: true}
+		})
+		.when('/register/:token', {
+			templateUrl: 'partials/register.html',
+			controller: 'registerController',
+			access: {restricted: false}
+		})
 		.otherwise({
 			redirectTo: '/'
 		})

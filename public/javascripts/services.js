@@ -3,18 +3,31 @@ angular.module('myApp').factory('AuthService',
 	function($q, $timeout, $http) {
 		// Create user variable
 		var user = null;
+		var admin = false;
 
 		// Return available functions for use in the controllers
 		return ({
 			isLoggedIn: isLoggedIn,
+			isAdmin: isAdmin,
 			getUserStatus: getUserStatus,
 			login: login,
 			logout: logout,
-			register: register
+			register: register,
+			listAll: listAll
 		});
 
 		function isLoggedIn() {
 			if(user) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+
+		function isAdmin() {
+			console.log("admin: ");
+			console.log(admin);
+			if(admin) {
 				return true;
 			} else {
 				return false;
@@ -27,6 +40,11 @@ angular.module('myApp').factory('AuthService',
 			.success(function (data) {
 				if(data.status){
 					user = true;
+					if(data.admin) {
+						admin = true;
+					} else {
+						admin = false;
+					}
 				} else {
 					user = false;
 				}
@@ -47,6 +65,11 @@ angular.module('myApp').factory('AuthService',
 				.success(function(data, status) {
 					if(status === 200 && data.status) {
 						user = true;
+						if(data.admin) {
+							admin = true;
+						} else {
+							admin = false;
+						}
 						deferred.resolve();
 					} else {
 						user = false;
@@ -82,25 +105,39 @@ angular.module('myApp').factory('AuthService',
 			return deferred.promise;
 		}
 
-		function register(username, password) {
+		function register(username, name, password, email, phone) {
 			// Create new instance of deferred
 			var deferred = $q.defer();
 
 			$http.post('/user/register',
-				{username: username, password: password})
-				// Handle success
-				.success(function(data, status) {
-					if(status === 200 && data.status) {
-						deferred.resolve();
-					} else {
-						deferred.reject();
-					}
-				})
-				.error(function(data) {
+				{username: username,name: name, password: password, email: email, phone : phone})
+			// Handle success
+			.success(function(data, status) {
+				if(status === 200 && data.status) {
+					deferred.resolve();
+				} else {
 					deferred.reject();
-				});
+				}
+			})
+			.error(function(data) {
+				deferred.reject();
+			});
 
 			// Return promise object
+			return deferred.promise;
+		}
+
+		function listAll() {
+			var deferred = $q.defer();
+
+			$http.get('/user/listUsers')
+			.success(function(users) {
+				deferred.resolve(users);
+			})
+			.error(function(err) {
+				deferred.reject(err);
+			});
+
 			return deferred.promise;
 		}
 	}])
@@ -118,19 +155,20 @@ angular.module('myApp').factory('AuthService',
 				updateRecordByID: updateRecordByID,
 				removeRecord: removeRecord,
 				createVolunteer: createVolunteer,
-				updateSession: updateSession
+				updateSession: updateSession,
+				createSession: createSession,
+				getProgramByIDs: getProgramByIDs,
+				addProgramToUser: addProgramToUser,
+				removeProgramFromUser: removeProgramFromUser,
+				modifyProgram: modifyProgram
 			});
 
-			function getPrograms(options) {
+			function getPrograms() {
 				// Create new instance of deferred
 				var deferred = $q.defer();
-
-				console.log("options: ");
-				console.log(options);
 				$http({
 					url: '/database/programs',
-					method: 'GET',
-					params: options
+					method: 'GET'
 				})
 				// Handle Success
 				.success(function(data) {
@@ -153,6 +191,94 @@ angular.module('myApp').factory('AuthService',
 				$http({
 					url: '/database/programs/'+id,
 					method: 'GET'
+				})
+				// Handle Success
+				.success(function(data) {
+					deferred.resolve(data);
+				})
+				// Handle Error
+				.error(function(error) {
+					deferred.reject(error);
+				});
+
+				// Return promise object
+				return deferred.promise;
+			}
+
+			// Returns programs by array of IDs.
+			function getProgramByIDs(ids) {
+				// Create new instance of deferred
+				console.log("IDs");
+				console.log(ids);
+				var deferred = $q.defer();
+				$http({
+					url: '/database/programs/',
+					method: 'POST',
+					data: {
+						ids: ids
+					}
+				})
+				// Handle Success
+				.success(function(data) {
+					deferred.resolve(data);
+				})
+				// Handle Error
+				.error(function(error) {
+					deferred.reject(error);
+				});
+
+				// Return promise object
+				return deferred.promise;
+			}
+
+			// Add program to user
+			function addProgramToUser(userID, programID) {
+				var deferred = $q.defer();
+				$http({
+					url: '/database/addProgramToUser/',
+					method: 'POST',
+					data: { userID: userID, programID: programID }
+				})
+				// Handle Success
+				.success(function(data) {
+					deferred.resolve(data);
+				})
+				// Handle Error
+				.error(function(error) {
+					deferred.reject(error);
+				});
+
+				// Return promise object
+				return deferred.promise;
+			}
+
+			// Add program to user
+			function removeProgramFromUser(userID, programID) {
+				var deferred = $q.defer();
+				$http({
+					url: '/database/removeProgramFromUser/',
+					method: 'POST',
+					data: { userID: userID, programID: programID }
+				})
+				// Handle Success
+				.success(function(data) {
+					deferred.resolve(data);
+				})
+				// Handle Error
+				.error(function(error) {
+					deferred.reject(error);
+				});
+
+				// Return promise object
+				return deferred.promise;
+			}
+
+			function modifyProgram(program) {
+				var deferred = $q.defer();
+				$http({
+					url: '/database/programs/'+program._id,
+					method: 'PUT',
+					data: { program: program }
 				})
 				// Handle Success
 				.success(function(data) {
@@ -312,6 +438,7 @@ angular.module('myApp').factory('AuthService',
 				return deferred.promise;
 			}
 
+			// Updates the session with sessionID with the session object provided
 			function updateSession(sessionID, session) {
 				var deferred = $q.defer();
 
@@ -328,6 +455,136 @@ angular.module('myApp').factory('AuthService',
 				});
 
 				// Return promise object
+				return deferred.promise;
+			}
+
+			// Creates a new session
+			function createSession(session) {
+				var deferred = $q.defer();
+
+				$http({
+					url: '/database/sessions/',
+					method: 'POST',
+					data: session
+				})
+				.success(function(data) {
+					deferred.resolve(data);
+				})
+				.error(function(error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			}
+
+	}])
+	.factory('registrationService',
+		['$q', '$timeout', '$http',
+		function($q, $timeout, $http) {
+			// Return available functions for use in the controllers
+			return ({
+				inviteUser: inviteUser,
+				getUser: getUser,
+				removeUser: removeUser,
+				listAll: listAll,
+				resendConfirmation: resendConfirmation
+			});
+
+			// Invite new user (volunteer leader)
+			function inviteUser(newUser) {
+				var deferred = $q.defer();
+
+				var data = ({
+					name : newUser.name,
+					email : newUser.email,
+					phone : newUser.phone
+				});
+
+				console.log("2");
+				console.log(newUser);
+
+				$http({
+					url: '/user/invite',
+					method: 'POST',
+					data: data
+				})
+				.success(function(data) {
+					deferred.resolve(data);
+				})
+				.error(function(error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			}
+
+			// Gets user information from token
+			function getUser(token) {
+				var deferred = $q.defer();
+
+				$http({
+					url: '/user/invite/'+token,
+					method: 'GET'
+				})
+				.success(function(user) {
+					deferred.resolve(user);
+				})
+				.error(function(error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			}
+
+			// Deletes user from tempUser after success
+			function removeUser(token) {
+				var deferred = $q.defer();
+
+				$http({
+					url: '/user/invite/'+token,
+					method: 'DELETE'
+				})
+				.success(function() {
+					deferred.resolve();
+				})
+				.error(function(error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			}
+
+			// Lists all tempUsers
+			function listAll() {
+				var deferred = $q.defer();
+
+				$http.get('/user/listTempUsers')
+				.success(function(users) {
+					deferred.resolve(users);
+				})
+				.error(function(err) {
+					deferred.reject(err);
+				});
+
+				return deferred.promise;
+			}
+
+			// Resend Confirmation
+			function resendConfirmation(email) {
+				var deferred = $q.defer();
+
+				$http({
+					url: '/user/resendConfirmation',
+					method: 'POST',
+					data: { email: email }
+				})
+				.success(function() {
+					deferred.resolve();
+				})
+				.error(function(err) {
+					deferred.reject(err);
+				});
+
 				return deferred.promise;
 			}
 	}])
