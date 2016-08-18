@@ -44,7 +44,7 @@ TempUser.statics.invite = function(tempUser, cb) {
 };
 
 TempUser.methods.sendEmail = function(cb) {
-	var url = 'http://localhost:3000/#/register/'+ this.token;
+	var url = 'https://infinite-oasis-96191.herokuapp.com/#/register/'+ this.token;
 
 	// Create reusable transporter object using default SMTP transport
 	var transporter = nodemailer.createTransport('smtps://nitenoob%40gmail.com:24301443@smtp.gmail.com');
