@@ -68,7 +68,6 @@ angular.module('myApp').controller('registerController',
 		registrationService.getUser($routeParams.token)
 		.then(function(user) {
 			$scope.valid = true;
-			console.log(user);
 			$scope.registerForm.name = user.name;
 			$scope.registerForm.email = user.email;
 			$scope.registerForm.phone = user.phone;
@@ -97,7 +96,6 @@ angular.module('myApp').controller('registerController',
 					$scope.registerForm = {};
 				})
 				.catch(function() {
-					console.log("!!!! Error removing tempUser"+$routeParams.token);
 					$location.path('/login');
 					$scope.disabled = false;
 					$scope.registerForm = {};
@@ -113,68 +111,150 @@ angular.module('myApp').controller('registerController',
 		};
 }]);
 
-angular.module('myApp').controller('dashboardController',
-	['$scope', '$location', 'databaseService', 'AuthService',
-	function($scope, $location, databaseService, AuthService) {
+angular.module('myApp').controller('dashboardController', function($scope, $location, databaseService, AuthService, $uibModal) {
 
-		// Initial Values
-		$scope.error = false;
-		$scope.admin = AuthService.isAdmin();
+	// Initial Values
+	$scope.error = false;
+	$scope.admin = AuthService.isAdmin();
+	$scope.editing = false;
+
+	databaseService.getPrograms()
+	// Handle success
+	.then(function(programs) {
+		$scope.programs = programs;
+	})
+	// Handle Error
+	.catch(function(error) {
+		$scope.error = true;
+		$scope.errorMessage = error;
+	});
+
+	// Filter to ensure that volunteers shown are not already participating.
+	$scope.filterAlreadyParticipating = function(volunteer) {
+		for(var i = 0; i < $scope.currentSession.records.length; i++) {
+			if($scope.currentSession.records[i].volunteerID._id == volunteer._id) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	$scope.editPrograms = function() {
+		$scope.editing = true;
+		$scope.copy = $scope.programs;
+	}
+
+	$scope.saveChanges = function() {
 		$scope.editing = false;
+	}
 
-		databaseService.getPrograms()
-		// Handle success
-		.then(function(programs) {
-			$scope.programs = programs;
+	$scope.modifyProgram = function(program) {
+		databaseService.modifyProgram(program)
+		.then(function() {
+			console.log(""); // It werks
 		})
-		// Handle Error
-		.catch(function(error) {
-			$scope.error = true;
-			$scope.errorMessage = error;
+		.catch(function(err) {
+			if(err) {
+				$scope.err = true;
+				$scope.errorMessage = err;
+			}
 		});
+	}
 
-		// Filter to ensure that volunteers shown are not already participating.
-		$scope.filterAlreadyParticipating = function(volunteer) {
-			for(var i = 0; i < $scope.currentSession.records.length; i++) {
-				if($scope.currentSession.records[i].volunteerID._id == volunteer._id) {
-					return false;
+	// Creates Register Volunteer Modal
+	$scope.openDeleteModal = function(program) {
+		var modalInstance = $uibModal.open({
+			animation: true,
+			templateUrl: 'deleteTemplate.html',
+			controller: 'deleteModalCtrl',
+			resolve: {
+				program: function() {
+					return program;
 				}
 			}
-			return true;
-		}
+		});
 
-		$scope.editPrograms = function() {
-			$scope.editing = true;
-			$scope.copy = $scope.programs;
-		}
-
-		$scope.saveChanges = function() {
-			$scope.editing = false;
-		}
-
-		$scope.modifyProgram = function(program) {
-			console.log("yup");
-			databaseService.modifyProgram(program)
+		modalInstance.result.then(function() {
+			// Delete program
+			databaseService.deleteProgram(program)
 			.then(function() {
-				console.log("Yay");
+				// Remove program from list
+				for(var i = 0; i < $scope.programs.length; i++) {
+					if($scope.programs[i]._id == program._id) {
+						// Found match
+						$scope.programs.splice(i, 1);
+						break;
+					}
+				}
+				$scope.editPrograms();
 			})
 			.catch(function(err) {
-				if(err) {
-					$scope.err = true;
-					$scope.errorMessage = err;
-				}
+				$scope.error = true;
+				$scope.errorMessage = err;
 			});
-		}
-}]);
+		});
+	}
 
-angular.module('myApp').controller('dashboardAdminController',
-	['$scope', '$location', 'databaseService', 'AuthService',
-	function($scope, $location, databaseService, AuthService) {
-		$scope.mainTemplate = 'partials/test.html';
-		$scope.getCntrl = function() {
-			return 'testController';
+	$scope.openCreateProgramModal = function() {
+		var modalInstance = $uibModal.open({
+			animation: true,
+			templateUrl: 'createTemplate.html',
+			controller: 'createModalCtrl',
+		});
+
+		modalInstance.result.then(function(program) {
+			databaseService.createProgram(program)
+			.then(function() {
+				$scope.programs.push(program);
+			})
+			.catch(function(err){
+				$scope.error = true;
+				$scope.errorMessage = err;
+			});
+		});
+	}
+});
+
+angular.module('myApp').controller('createModalCtrl', function($scope, $uibModalInstance) {
+
+	$scope.program = {
+		project : "",
+		location : ""
+	};
+
+	$scope.error = false;
+	$scope.errorMessage = "";
+
+	// Delete Clicked
+	$scope.submit = function() {
+		if(!$scope.program.project || !$scope.program.location) {
+			$scope.error = true;
+			$scope.errorMessage = "Please fill in all fields";
+		} else {
+			$uibModalInstance.close($scope.program);
 		}
-}]);
+	}
+	
+	// Close clicked
+	$scope.dismissModal = function() {
+		$uibModalInstance.dismiss("cancel");
+	};
+});
+
+angular.module('myApp').controller('deleteModalCtrl', function($scope, $uibModalInstance, program) {
+
+	$scope.program = program;
+
+	// Delete Clicked
+	$scope.delete = function() {
+		$uibModalInstance.close();
+	}
+	
+	// Close clicked
+	$scope.dismissModal = function() {
+		$uibModalInstance.dismiss("cancel");
+	};
+});
 
 angular.module('myApp').controller('usersController',
 	['$scope', '$location', 'registrationService', 'AuthService', '$uibModal',
@@ -207,7 +287,6 @@ angular.module('myApp').controller('usersController',
 			.then(function() {
 				for(var i = 0; i < $scope.userList.length; i++ ){
 					if($scope.userList[i].email === email) {
-						console.log("please");
 						$scope.userList[i].timestamp = Date.now();
 						break;
 					}
@@ -233,7 +312,7 @@ angular.module('myApp').controller('usersController',
 			});
 
 			modalInstance.result.then(function() {
-				console.log("Done :)");
+				console.log(""); // Yay
 			});
 		}
 
@@ -301,9 +380,6 @@ angular.module('myApp').controller('usersController',
 
 angular.module('myApp').controller('userProgramModalCtrl', function($scope, $uibModalInstance, databaseService, user) {
 
-	console.log("Modal");
-	console.log(user);
-
 	$scope.programs = [];
 	$scope.managedPrograms = [];
 
@@ -340,7 +416,6 @@ angular.module('myApp').controller('userProgramModalCtrl', function($scope, $uib
 	$scope.removeProgram = function(program) {
 		databaseService.removeProgramFromUser(user._id, program._id)
 		.then(function() {
-			console.log("Removed");
 			// Remove program from user
 			for(var i = 0; i < $scope.managedPrograms.length; i++) {
 				if($scope.managedPrograms[i]._id == program._id) {
@@ -382,8 +457,6 @@ angular.module('myApp').controller('inviteUserCtrl',
 	$scope.inviteUserError = false;
 
 	$scope.submit = function() {
-		console.log("1");
-		console.log($scope.newUser);
 		if($scope.newUser.name == "" || $scope.newUser.email == "") {
 			$scope.inviteUserError = true;
 			$scope.inviteUserErrorMessage = "Please fill in all required fields";
@@ -518,8 +591,6 @@ angular.module('myApp').controller('programController',
 					$scope.updateRecords();
 				})
 				.catch(function(error) {
-					console.log("ERROR!!");
-					console.log(error.message);
 					$scope.error = true;
 					$scope.errorMessage = error.message;
 				});
@@ -542,7 +613,6 @@ angular.module('myApp').controller('programController',
 				databaseService.getRecordsBySession($scope.currentSession._id)
 				.then(function(records) {
 					$scope.currentSession.records = records;
-					console.log($scope.currentSession.records);
 				})
 				.catch(function(error) {
 					$scope.error = true;
@@ -553,8 +623,6 @@ angular.module('myApp').controller('programController',
 
 		// Updates record 
 		$scope.updatePresent = function(record) {
-			console.log("Running Update Present");
-			console.log($scope.currentSession);
 			databaseService.updateRecordByID(record._id, record)
 			.then(function(response) {
 				console.log(response);
@@ -619,7 +687,6 @@ angular.module('myApp').controller('programController',
 		// Edit Session Date
 		$scope.changeDate = function() {
 			$scope.editing = true;
-			console.log($scope.editing);
 			$scope.time.old = $scope.time.readable;
 			focus('changeDate');
 		}

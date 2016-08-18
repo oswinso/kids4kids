@@ -46,7 +46,7 @@
 						</div>
 					</td>
 					<td>
-						<button role="button" class="btn btn-default"> Delete Program </button>
+						<button role="button" class="btn btn-default" ng-click="$parent.openDeleteModal(program)"> Delete Program </button>
 					</td>
 				</tr>
 			</tbody>
@@ -56,5 +56,46 @@
 
 <div class="row">
 	<button class="btn btn-default" role="button" ng-click="editPrograms()" ng-hide="editing"> Edit Programs </button>
+
 	<button class="btn btn-default" role="button" ng-click="saveChanges()" ng-show="editing"> Save Changes </button>
+	<button class="btn btn-default" role="button" ng-click="openCreateProgramModal()" ng-show="editing"> Create Program </button>
 </div>
+
+<script type="text/ng-template" id="deleteTemplate.html">
+	<!-- Header -->
+	<div class="modal-header">
+		<button type="button" class="close" ng-click="dismissModal()"><span>&times;</span></button>
+		<h4 class="modal-title" id="inviteUserLabel"> Are you sure you want to permenantly delete <em> {{program.project}} @ {{program.location}}?</em></h4>
+	</div>
+	<!-- Footer -->
+	<div class="modal-footer">
+		<button type="button" class="btn btn-default" ng-click="dismissModal()"> Cancel </button>
+		<button type="button" class="btn btn-default" ng-click="delete()"> Delete </button>
+	</div>
+</script>
+
+
+<script type="text/ng-template" id="createTemplate.html">
+	<!-- Header -->
+	<div class="modal-header">
+		<button type="button" class="close" ng-click="dismissModal()"><span>&times;</span></button>
+		<h4 class="modal-title" id="inviteUserLabel"> Create a program </h4>
+	</div>
+	<!-- Body -->
+	<div class="modal-body">
+		<div ng-show="error" class="alert alert-danger">{{ errorMessage }}</div>
+		<div class="input-group">
+			<label for="registerName">Name</label>
+			<input type="text" id="name" class="form-control" ng-model="program.project" placeholder="Name" required>
+		</div>
+
+		<div class="input-group">
+			<label for="registerLocation">Location</label>
+			<input type="text" id="registerLocation" class="form-control" ng-model="program.location" placeholder="Location" required>
+		</div>
+	</div>
+	<!-- Footer -->
+	<div class="modal-footer">
+		<button type="submit" class="btn btn-default" ng-click="submit()"> Submit </button>
+	</div>
+</script>

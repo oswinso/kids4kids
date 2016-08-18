@@ -25,8 +25,6 @@ angular.module('myApp').factory('AuthService',
 		}
 
 		function isAdmin() {
-			console.log("admin: ");
-			console.log(admin);
 			if(admin) {
 				return true;
 			} else {
@@ -149,6 +147,10 @@ angular.module('myApp').factory('AuthService',
 				getPrograms: getPrograms,
 				getSessions: getSessions,
 				getProgramByID: getProgramByID,
+				createProgram: createProgram,
+				modifyProgram: modifyProgram,
+				deleteProgram: deleteProgram,
+
 				getVolunteersByName: getVolunteersByName,
 				addVolunteerToSession: addVolunteerToSession,
 				getRecordsBySession: getRecordsBySession,
@@ -157,10 +159,13 @@ angular.module('myApp').factory('AuthService',
 				createVolunteer: createVolunteer,
 				updateSession: updateSession,
 				createSession: createSession,
+
 				getProgramByIDs: getProgramByIDs,
+
 				addProgramToUser: addProgramToUser,
 				removeProgramFromUser: removeProgramFromUser,
-				modifyProgram: modifyProgram
+
+				
 			});
 
 			function getPrograms() {
@@ -172,8 +177,6 @@ angular.module('myApp').factory('AuthService',
 				})
 				// Handle Success
 				.success(function(data) {
-					console.log("data: ");
-					console.log(data);
 					deferred.resolve(data);
 				})
 				// Handle Error
@@ -191,6 +194,28 @@ angular.module('myApp').factory('AuthService',
 				$http({
 					url: '/database/programs/'+id,
 					method: 'GET'
+				})
+				// Handle Success
+				.success(function(data) {
+					deferred.resolve(data);
+				})
+				// Handle Error
+				.error(function(error) {
+					deferred.reject(error);
+				});
+
+				// Return promise object
+				return deferred.promise;
+			}
+
+			// Create Program
+			function createProgram(program) {
+				// Create new instance of deferred
+				var deferred = $q.defer();
+				$http({
+					url: '/database/program',
+					method: 'POST',
+					data: program
 				})
 				// Handle Success
 				.success(function(data) {
@@ -293,6 +318,25 @@ angular.module('myApp').factory('AuthService',
 				return deferred.promise;
 			}
 
+			function deleteProgram(program) {
+				var deferred = $q.defer();
+				$http({
+					url: '/database/programs/'+program._id,
+					method: 'DELETE'
+				})
+				// Handle Success
+				.success(function(data) {
+					deferred.resolve(data);
+				})
+				// Handle Error
+				.error(function(error) {
+					deferred.reject(error);
+				});
+
+				// Return promise object
+				return deferred.promise;
+			}
+
 			function getSessions(options) {
 				// Create new instance of deferred
 				var deferred = $q.defer();
@@ -304,8 +348,6 @@ angular.module('myApp').factory('AuthService',
 				})
 				// Handle Success
 				.success(function(data) {
-					console.log("data: ");
-					console.log(data);
 					deferred.resolve(data);
 				})
 				// Handle Error

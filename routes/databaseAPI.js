@@ -145,31 +145,45 @@ router.post('/programs', ensureAdmin, function(req, res) {
 })
 
 // Create a program
-router.post('/programs', ensureAuthenticated, function(req, res, next) {
+router.post('/program', ensureAuthenticated, function(req, res) {
 	// Create a Program
 	if(!req.body.location || !req.body.project) {
-		res.status(400).json({
-			status: 'error',
-			data: null,
-			message: 'Missing fields'
+		return res.status(400).json({
+			err: 'Missing fields'
 		});
 	} else {
 		Program.create(req.body, function(err, program) {
 			if(err) {
-				res.status(400).send(err);
+				return res.status(400).send(err);
 			}
 
 			// Return id of program after created
-			res.status(201).json({
+			return res.status(201).json({
 				status: 'success',
 				data: {
 					id: program.id
-				},
-				message: null
+				}
 			});
-			next();
 		});
 	}
+});
+
+router.delete('/programs/:programID', ensureAdmin, function(req, res) {
+	Program.findById(req.params.programID, function(err, program) {
+		if(err) {
+			return res.status(400).json({err: err});
+		}
+		if(!program) {
+			return res.status(400).json({err: "Program not found"});
+		}
+		program.remove(function(err) {
+			if(err) {
+				return res.status(400).json({err: err});
+			} else {
+				return res.status(200).json({status: "Success"});
+			}
+		});
+	});
 });
 
 // Adds program to user
