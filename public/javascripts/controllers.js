@@ -118,16 +118,21 @@ angular.module('myApp').controller('dashboardController', function($scope, $loca
 	$scope.admin = AuthService.isAdmin();
 	$scope.editing = false;
 
-	databaseService.getPrograms()
-	// Handle success
-	.then(function(programs) {
-		$scope.programs = programs;
-	})
-	// Handle Error
-	.catch(function(error) {
-		$scope.error = true;
-		$scope.errorMessage = error;
-	});
+	// Get programs from database
+	var getPrograms = function() {
+		databaseService.getPrograms()
+		// Handle success
+		.then(function(programs) {
+			$scope.programs = programs;
+		})
+		// Handle Error
+		.catch(function(error) {
+			$scope.error = true;
+			$scope.errorMessage = error;
+		});
+	}
+
+	getPrograms();
 
 	// Filter to ensure that volunteers shown are not already participating.
 	$scope.filterAlreadyParticipating = function(volunteer) {
@@ -205,7 +210,7 @@ angular.module('myApp').controller('dashboardController', function($scope, $loca
 		modalInstance.result.then(function(program) {
 			databaseService.createProgram(program)
 			.then(function() {
-				$scope.programs.push(program);
+				getPrograms();
 			})
 			.catch(function(err){
 				$scope.error = true;

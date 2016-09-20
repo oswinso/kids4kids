@@ -5,8 +5,9 @@ var Schema = mongoose.Schema;
 // Rand-Token for random token generation
 var randtoken = require('rand-token');
 
-// Nodemailer for sending mail
-var nodemailer = require('nodemailer');
+// sendgrid helper
+var helper = require('sendgrid').mail;
+var sg = require('sendgrid')("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");
 
 var TempUser = new Schema({
 	name: String,
@@ -44,27 +45,27 @@ TempUser.statics.invite = function(tempUser, cb) {
 };
 
 TempUser.methods.sendEmail = function(cb) {
-	var url = 'https://infinite-oasis-96191.herokuapp.com/#/register/'+ this.token;
+	// var url = 'https://infinite-oasis-96191.herokuapp.com/#/register/'+ this.token;
 
-	// Create reusable transporter object using default SMTP transport
-	var transporter = nodemailer.createTransport('smtps://nitenoob%40gmail.com:24301443@smtp.gmail.com');
+	var from_email = new helper.Email('noreply@k4kcheckinapp.com');
+	var to_email = new helper.Email(this.email);
+	var subject = 'Invitation to Kids4Kids Check In App';
+	var content = new helper.Content('text/html', 'Hello, Email!');
+	var mail = new helper.Mail(from_email, subject, to_email, content);
 
-	// setup email data
-	var mailOptions = {
-		// from: '"Kids4Kids Noreply" <noreply@kids4kids.com>', // Sender address
-		from: '"noreply" <nitenoob@gmail.com>', // Temp
-		to: this.email, // Receiver
-		subject: 'Test',
-		text: 'You have been invited to the checkin app. Confirm your account by clicking the following link: '+url,
-		html: 'Click <a href="'+url+'"> here </a> to confirm your acccount for the checkin app'
-	};
+	mail.personalizations[0].addSubstitution(new helper.Substitution('-token-', this.token));
+	mail.setTemplateId('299f4bd5-b9f7-4b20-b6fd-764e8dc13b4c');
 
-	// Send mail
-	transporter.sendMail(mailOptions, function(error, info) {
+	var request = sg.emptyRequest({
+		method: 'POST',
+		path: '/v3/mail/send',
+		body: mail.toJSON(),
+	});
+
+	sg.API(request, function(error, response) {
 		if(error) { return cb(error)};
-
 		cb(null);
-	})
+	});
 };
 
 TempUser.methods.generateToken = function(cb) {
